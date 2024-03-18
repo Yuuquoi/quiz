@@ -24,4 +24,6 @@ public interface QuizService {
 	public BaseRes answer(AnswerReq req);
 	
 	public StatisticRes statistics(int quizId);
+	
+	public BaseRes objMapper(String str);
 }

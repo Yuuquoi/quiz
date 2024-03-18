@@ -11,7 +11,9 @@ public enum RtnCode {
 	QUESTION_NO_ANSWER(400, "Question no answer !!"), //
 	DUPLICATED_QUESTION_ID(400, "Duplicated Question Id !!"), //
 	DUPLICATED_QUIZ_ANSWER(400, "Duplicated quiz answer !!"), //
-	TIME_FORMAT_ERROR(400, "Time Format Error !!");
+	DELETE_QUIZ_ERROR(400, "Delete quiz error !!"), //
+	TIME_FORMAT_ERROR(400, "Time Format Error !!"), //
+	SAVE_QUIZ_ERROR(400, "Save quiz error");
 
 	private int code;
 
@@ -29,5 +31,9 @@ public enum RtnCode {
 	public String getMessage() {
 		return message;
 	}
+	
+	public static final int NOT_FOUND_CODE = 404;
+
+	public static final int ERROR_CODE = 400;
 
 }

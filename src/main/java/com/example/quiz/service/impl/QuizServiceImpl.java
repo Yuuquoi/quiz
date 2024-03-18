@@ -24,6 +24,7 @@ import com.example.quiz.vo.BaseRes;
 import com.example.quiz.vo.CreateOrUpdateReq;
 import com.example.quiz.vo.SearchRes;
 import com.example.quiz.vo.StatisticRes;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class QuizServiceImpl implements QuizService {
@@ -140,13 +141,21 @@ public class QuizServiceImpl implements QuizService {
 					req.getQuizList().get(0).getQuizId(), LocalDate.now())) {
 				return new BaseRes(RtnCode.QUIZ_NOT_FOUND.getCode(), RtnCode.QUIZ_NOT_FOUND.getMessage());
 			}
-			quizDao.deleteByQuizId(req.getQuizList().get(0).getQuId());
+			try {
+				quizDao.deleteByQuizId(req.getQuizList().get(0).getQuId());				
+			} catch (Exception e) {
+				return new BaseRes(RtnCode.DELETE_QUIZ_ERROR.getCode(), RtnCode.DELETE_QUIZ_ERROR.getMessage());
+			}
 		}
 		// 防呆：怕前端沒修改
 		for (Quiz item : req.getQuizList()) {
 			item.setPublished(req.isPublished());
 		}
-		quizDao.saveAll(req.getQuizList());
+		try {
+			quizDao.saveAll(req.getQuizList());			
+		} catch (Exception e) {
+			return new BaseRes(RtnCode.SAVE_QUIZ_ERROR.getCode(), RtnCode.SAVE_QUIZ_ERROR.getMessage());
+		}
 		return new BaseRes(RtnCode.SUCCESS.getCode(), RtnCode.SUCCESS.getMessage());
 	}
 
@@ -242,8 +251,26 @@ public class QuizServiceImpl implements QuizService {
 			int lengthAfter = ans.length();
 			int count = (lengthBefore - lengthAfter) / option.length();
 			ansCountMap.put(option, count);
+			ansCountMap.entrySet();
 		}
 		answerCountMap.put(quiz.getQuId(), ansCountMap);
 	}
+
+	@Override
+	public BaseRes objMapper(String str) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			Quiz quiz = mapper.readValue(str, Quiz.class);
+		} catch (Exception e) {
+			// 法一：回傳固定錯誤訊息
+//			return new BaseRes(RtnCode.PARAM_ERROR.getCode(), RtnCode.PARAM_ERROR.getMessage());
+			// 法二：回傳 catch 中 exception 的錯誤訊息
+			return new BaseRes(RtnCode.ERROR_CODE, e.getMessage());
+
+		}
+		return new BaseRes(RtnCode.SUCCESS.getCode(), RtnCode.SUCCESS.getMessage());
+	}
+	
+	
 
 }
